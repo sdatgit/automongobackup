@@ -51,7 +51,7 @@ DBHOST="127.0.0.1"
 DBPORT="27017"
 
 # Backup directory location e.g /backups
-BACKUPDIR="/var/backups/mongodb"
+BACKUPDIR="/tmp/mongodb"
 
 # Mail setup
 # What would you like to be mailed to you?
@@ -65,7 +65,7 @@ MAILCONTENT="stdout"
 MAXATTSIZE="4000"
 
 # Email Address to send mail to? (user@domain.com)
-# MAILADDR=""
+MAILADDR="admin@wavelety.com"
 
 # ============================================================================
 # === SCHEDULING AND RETENTION OPTIONS ( Read the doc's below for details )===
@@ -101,7 +101,7 @@ LATEST="yes"
 LATESTLINK="yes"
 
 # Use oplog for point-in-time snapshotting.
-OPLOG="yes"
+#OPLOG="yes"
 
 # Choose other Server if is Replica-Set Master
 REPLICAONSLAVE="yes"
