@@ -45,13 +45,13 @@
 # DBAUTHDB=""
 
 # Host name (or IP address) of mongo server e.g localhost
-DBHOST="127.0.0.1"
+DBHOST="$1"
 
 # Port that mongo is listening on
-DBPORT="27017"
+DBPORT="$2"
 
 # Backup directory location e.g /backups
-BACKUPDIR="/tmp/mongodb"
+BACKUPDIR="$3"
 
 # Mail setup
 # What would you like to be mailed to you?
