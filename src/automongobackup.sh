@@ -45,15 +45,17 @@
 # DBAUTHDB=""
 
 # Host name (or IP address) of mongo server e.g localhost
-DBHOST="127.0.0.1"
+DBHOST=
 
 # Port that mongo is listening on
-DBPORT="27117"
+DBPORT=
 
 # Backup directory location e.g /backups
 
 # controller db is on /dev/sdb, so backup on /dev/sda
-BACKUPDIR="/media/work1/backup/data/mongodb"
+BACKUPDIR=
+
+#"/media/work1/backup/data/mongodb"
 
 # Wavelety
 # Backup to Amazon S3
@@ -124,6 +126,59 @@ REQUIREDBAUTHDB="yes"
 # Command run after backups (uncomment to use)
 #POSTBACKUP=""
 
+
+#see http://wiki.bash-hackers.org/howto/getopts_tutorial
+usage() {
+    echo "Usage: automongobackup (-h host) (-p port) (-b backup directory) -? for help";
+    exit 1;
+}
+
+
+while getopts "h:p:b:?" opt; do
+  case $opt in
+    h)
+      DBHOST=$OPTARG
+      echo "DBHOST=$DBHOST" >&2
+      ;;
+    p)
+      DBPORT=$OPTARG
+      echo "DBPORT=$DBPORT" >&2
+      ;;
+    b)
+      BACKUPDIR=$OPTARG
+      echo "BACKUPDIR=$BACKUPDIR" >&2
+      ;;
+    ?)
+      echo $USAGE;
+      exit $E_OPTERROR;
+      ;;
+    \?) #unrecognized option - show help
+	    usage
+      ;;
+   esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+if [ -z $DBHOST ] 
+then
+    DBHOST="127.0.0.1"
+fi
+
+if [ -z $DBPORT ] 
+then
+    DBPORT="27017"
+fi
+
+
+if [ -z $BACKUPDIR ]
+then
+     usage
+     exit 1
+fi
+
+echo "Using $DBHOST $DBPORT $BACKUPDIR..."
 
 #=====================================================================
 # Options documentation
