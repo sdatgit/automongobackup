@@ -51,6 +51,7 @@ DBHOST="127.0.0.1"
 DBPORT="27117"
 
 # Backup directory location e.g /backups
+
 # controller db is on /dev/sdb, so backup on /dev/sda
 BACKUPDIR="/media/work1/backup/data/mongodb"
 
