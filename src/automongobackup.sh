@@ -48,10 +48,18 @@
 DBHOST="127.0.0.1"
 
 # Port that mongo is listening on
-DBPORT="27017"
+DBPORT="27117"
 
 # Backup directory location e.g /backups
-BACKUPDIR="/tmp/mongodb"
+# controller db is on /dev/sdb, so backup on /dev/sda
+BACKUPDIR="/media/work1/backup/data/mongodb"
+
+# Wavelety
+# Backup to Amazon S3
+# Requires LATEST=yes
+S3_BUCKET=wavelety-backup
+_AWS=/usr/local/bin/aws
+
 
 # Mail setup
 # What would you like to be mailed to you?
@@ -113,7 +121,8 @@ REQUIREDBAUTHDB="yes"
 # PREBACKUP=""
 
 # Command run after backups (uncomment to use)
-# POSTBACKUP=""
+#POSTBACKUP=""
+
 
 #=====================================================================
 # Options documentation
@@ -385,7 +394,11 @@ function select_secondary_member {
     fi
 }
 
-# Compression function plus latest copy
+# Compression function plus latest copy and s3
+# Wavelety
+# Before cleanup, copy the file to s3
+# Only place file name is avaialble.
+
 compression () {
     SUFFIX=""
     dir=$(dirname $1)
@@ -408,6 +421,12 @@ compression () {
         fi
         $COPY "$1$SUFFIX" "$BACKUPDIR/latest/"
     fi
+
+    if [ "S3_BUCKET" ]; then
+	echo "Running $_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/controller/$file$SUFFIX..."
+	$_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/controller/$file$SUFFIX
+    fi
+
 
     if [ "$CLEANUP" = "yes" ]; then
         echo Cleaning up folder at "$1"
@@ -529,6 +548,8 @@ if [ "$POSTBACKUP" ]; then
     eval $POSTBACKUP
     echo
     echo ======================================================================
+    $POSTBACKUP
+
 fi
 
 # Clean up IO redirection if we plan not to deliver log via e-mail.
