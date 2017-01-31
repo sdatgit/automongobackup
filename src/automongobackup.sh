@@ -59,8 +59,9 @@ BACKUPDIR=
 
 # Wavelety
 # Backup to Amazon S3
-# Requires LATEST=yes
+# Requires LATEST=ye
 S3_BUCKET=wavelety-backup
+S3_FOLDER=
 _AWS=/usr/local/bin/aws
 
 
@@ -129,7 +130,7 @@ REQUIREDBAUTHDB="yes"
 
 #see http://wiki.bash-hackers.org/howto/getopts_tutorial
 usage() {
-    echo "Usage: automongobackup (-h host) (-p port) (-b backup directory) -? for help";
+    echo "Usage: automongobackup (-h host) (-p port) (-b backup directory) -f (s3 folder) -? for help";
     exit 1;
 }
 
@@ -147,6 +148,10 @@ while getopts "h:p:b:?" opt; do
     b)
       BACKUPDIR=$OPTARG
       echo "BACKUPDIR=$BACKUPDIR" >&2
+      ;;
+    f)
+      S3_FOLDER=$OPTARG
+      echo "S3_FOLDER=$S3_FOLDER" >&2
       ;;
     ?)
       echo $USAGE;
@@ -171,14 +176,21 @@ then
     DBPORT="27017"
 fi
 
-
 if [ -z $BACKUPDIR ]
 then
      usage
      exit 1
 fi
 
-echo "Using $DBHOST $DBPORT $BACKUPDIR..."
+
+if [ -z $S3_FOLDER ] 
+then
+     usage
+     exit 1
+fi
+
+
+echo "Using $DBHOST $DBPORT $BACKUPDIR $S3_BUCKET $S3_FOLDER..."
 
 #=====================================================================
 # Options documentation
@@ -479,8 +491,8 @@ compression () {
     fi
 
     if [ "S3_BUCKET" ]; then
-	echo "Running $_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/controller/$file$SUFFIX..."
-	$_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/controller/$file$SUFFIX
+	echo "Running $_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/$S3_FOLDER/$file$SUFFIX..."
+	$_AWS s3 cp $1$SUFFIX s3://$S3_BUCKET/`hostname`/$S3_FOLDER/$file$SUFFIX
     fi
 
 
