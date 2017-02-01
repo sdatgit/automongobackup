@@ -135,7 +135,7 @@ usage() {
 }
 
 
-while getopts "h:p:b:?" opt; do
+while getopts "h:p:b:f:?" opt; do
   case $opt in
     h)
       DBHOST=$OPTARG
